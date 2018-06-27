@@ -22,6 +22,7 @@ class ViewController: UIViewController {
     let config = ARWorldTrackingConfiguration()
     
     let floorImageArray = ["Wood1","Wood2","Wood3","Wood4", "Wood5", "Wood6", "Tile1", "Tile2", "Tile3", "Tile4"]
+    let furnitureArray = ["Chair","Couch","Table","Vase"]
     lazy var imageName = floorImageArray[0]
     let floorNodeName = "FloorNode"
     
@@ -36,7 +37,7 @@ class ViewController: UIViewController {
         sceneView.delegate = self
         sceneView.autoenablesDefaultLighting = true
         
-        addTapGestures()
+        addGestures()
         
 
     }
@@ -51,7 +52,7 @@ class ViewController: UIViewController {
         return floorNode                                                                                                //7
     }
     
-    func addTapGestures(){
+    func addGestures(){
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapped(sender:)))
         tap.numberOfTapsRequired = 1
         sceneView.addGestureRecognizer(tap)
@@ -116,7 +117,7 @@ class ViewController: UIViewController {
         self.sceneView.scene.rootNode.addChildNode(node)
     }
     
-    let furnitureArray = ["Chair","Couch","Table","Vase"]
+    
     
     
     @IBAction func furnitureButtonTapped(_ sender: UIButton) {
