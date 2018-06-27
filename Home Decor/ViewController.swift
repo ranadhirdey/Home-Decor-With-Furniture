@@ -23,7 +23,7 @@ class ViewController: UIViewController {
     
     let floorImageArray = ["Wood1","Wood2","Wood3","Wood4", "Wood5", "Wood6", "Tile1", "Tile2", "Tile3", "Tile4"]
     lazy var imageName = floorImageArray[0]
-    let floodNodeName = "FloorNode"
+    let floorNodeName = "FloorNode"
     
     var furnitureName = "Table"
     
@@ -47,7 +47,7 @@ class ViewController: UIViewController {
         floorNode.geometry?.firstMaterial?.diffuse.contents = UIImage(named: imageName)                                //3
         floorNode.geometry?.firstMaterial?.isDoubleSided = true                                                        //4
         floorNode.eulerAngles = SCNVector3(Double.pi/2,0,0)                                                            //5
-        floorNode.name = floodNodeName                                                                                  //6
+        floorNode.name = floorNodeName                                                                                  //6
         return floorNode                                                                                                //7
     }
     
@@ -83,7 +83,7 @@ class ViewController: UIViewController {
         
         let hitTest = scnVw.hitTest(tapLoc)
         if !hitTest.isEmpty{
-            let node = hitTest.filter({$0.node.name != "floorNode"}).first?.node
+            let node = hitTest.filter({$0.node.name != floorNodeName}).first?.node
             let pinchAction = SCNAction.scale(by: sender.scale, duration: 0)
             node?.runAction(pinchAction)
             sender.scale = 1.0
@@ -96,7 +96,7 @@ class ViewController: UIViewController {
         
         let hitTest = scnVw.hitTest(tapLoc)
         if !hitTest.isEmpty{
-            let node = hitTest.filter({$0.node.name != "floorNode"}).first?.node
+            let node = hitTest.filter({$0.node.name != floorNodeName}).first?.node
             if sender.state == .began || sender.state == .changed {
                 node?.eulerAngles = SCNVector3(CGFloat((node?.eulerAngles.x)!),sender.rotation,CGFloat((node?.eulerAngles.z)!))
             }
