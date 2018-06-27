@@ -22,6 +22,7 @@ class ViewController: UIViewController {
     
     let floorImageArray = ["Wood1","Wood2","Wood3","Wood4", "Wood5", "Wood6", "Tile1", "Tile2", "Tile3", "Tile4"]
     lazy var imageName = floorImageArray[0]
+    let floodNodeName = "FloorNode"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +31,9 @@ class ViewController: UIViewController {
         sceneView.session.run(config)
 
         sceneView.delegate = self
+        sceneView.autoenablesDefaultLighting = true
+        
+        addTapGesture()
         
         
         //        let capsuleNode = SCNNode(geometry: SCNCapsule(capRadius: 0.03, height: 0.1))
@@ -47,11 +51,44 @@ class ViewController: UIViewController {
         floorNode.position=SCNVector3(anchor.center.x,0,anchor.center.z)                                               //2
         floorNode.geometry?.firstMaterial?.diffuse.contents = UIImage(named: imageName)                                //3
         floorNode.geometry?.firstMaterial?.isDoubleSided = true                                                        //4
-        floorNode.eulerAngles = SCNVector3(Double.pi/2,0,0)                                                             //5
-        return floorNode                                                                                               //6
+        floorNode.eulerAngles = SCNVector3(Double.pi/2,0,0)                                                            //5
+        floorNode.name = floodNodeName                                                                                  //6
+        return floorNode                                                                                                //7
     }
     
+    func addTapGesture(){
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapped(sender:)))
+        tap.numberOfTapsRequired = 1
+        sceneView.addGestureRecognizer(tap)
+    }
     
+    @objc func tapped(sender: UITapGestureRecognizer){
+        let sceneView = sender.view as! ARSCNView
+        let tapLocation = sender.location(in: sceneView)
+        
+        let hitTest = sceneView.hitTest(tapLocation, types: .existingPlaneUsingExtent)
+        if !hitTest.isEmpty{
+            print("Touched on the plane")
+            addFurniture(hitTestResult: hitTest.first!)
+        }
+        else{
+            print("Not a plane")
+        }
+    }
+    
+    func addFurniture(hitTestResult:ARHitTestResult){
+        
+        let furnitureName = "Table"
+        
+        guard let scene = SCNScene(named: "furnitures.scnassets/\(furnitureName).scn") else{return}
+        
+        let node = (scene.rootNode.childNode(withName: furnitureName, recursively: false))!
+        
+        let transform = hitTestResult.worldTransform
+        let thirdColumn = transform.columns.3
+        node.position = SCNVector3(thirdColumn.x, thirdColumn.y, thirdColumn.z)
+        self.sceneView.scene.rootNode.addChildNode(node)
+    }
 
 }
 
