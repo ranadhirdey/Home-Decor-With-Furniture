@@ -11,6 +11,7 @@ import ARKit
 
 class ViewController: UIViewController {
 
+    @IBOutlet weak var furnitureButton: UIButton!
     @IBOutlet weak var sceneView: ARSCNView!
     @IBOutlet weak var collectionView: UICollectionView!{
         didSet{
@@ -24,6 +25,8 @@ class ViewController: UIViewController {
     lazy var imageName = floorImageArray[0]
     let floodNodeName = "FloorNode"
     
+    var furnitureName = "Table"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints, ARSCNDebugOptions.showWorldOrigin]
@@ -35,14 +38,6 @@ class ViewController: UIViewController {
         
         addTapGesture()
         
-        
-        //        let capsuleNode = SCNNode(geometry: SCNCapsule(capRadius: 0.03, height: 0.1))
-        //        capsuleNode.position = SCNVector3(0.1, 0.1, -0.1)
-        //
-        //        capsuleNode.geometry?.firstMaterial?.diffuse.contents = UIColor.blue //1
-        //        capsuleNode.eulerAngles = SCNVector3(0,0,Double.pi/2)//2
-        //
-        //        sceneView.scene.rootNode.addChildNode(capsuleNode)
 
     }
     
@@ -78,7 +73,7 @@ class ViewController: UIViewController {
     
     func addFurniture(hitTestResult:ARHitTestResult){
         
-        let furnitureName = "Table"
+        
         
         guard let scene = SCNScene(named: "furnitures.scnassets/\(furnitureName).scn") else{return}
         
@@ -89,6 +84,24 @@ class ViewController: UIViewController {
         node.position = SCNVector3(thirdColumn.x, thirdColumn.y, thirdColumn.z)
         self.sceneView.scene.rootNode.addChildNode(node)
     }
+    
+    let furnitureArray = ["Chair","Couch","Table","Vase"]
+    
+    
+    @IBAction func furnitureButtonTapped(_ sender: UIButton) {
+        let alertController = UIAlertController(title: "Select Furniture", message: "", preferredStyle: .actionSheet)
+        alertController.popoverPresentationController?.sourceView = sender
+       
+        for furnitureName in furnitureArray{
+            let alertAction = UIAlertAction(title: furnitureName, style: .default) {[weak self] (_) in
+                self?.furnitureName = furnitureName
+            }
+            alertController.addAction(alertAction)
+        }
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
 
 }
 
