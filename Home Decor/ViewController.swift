@@ -36,7 +36,7 @@ class ViewController: UIViewController {
         sceneView.delegate = self
         sceneView.autoenablesDefaultLighting = true
         
-        addTapGesture()
+        addTapGestures()
         
 
     }
@@ -51,10 +51,16 @@ class ViewController: UIViewController {
         return floorNode                                                                                                //7
     }
     
-    func addTapGesture(){
+    func addTapGestures(){
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapped(sender:)))
         tap.numberOfTapsRequired = 1
         sceneView.addGestureRecognizer(tap)
+        
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pinched(sender:)))
+        sceneView.addGestureRecognizer(pinchGesture)
+        
+        let rotateGesture = UIRotationGestureRecognizer(target: self, action: #selector(rotated(sender:)))
+        sceneView.addGestureRecognizer(rotateGesture)
     }
     
     @objc func tapped(sender: UITapGestureRecognizer){
@@ -71,10 +77,35 @@ class ViewController: UIViewController {
         }
     }
     
+    @objc func pinched(sender: UIPinchGestureRecognizer){
+        let scnVw = sender.view as! ARSCNView
+        let tapLoc = sender.location(in: scnVw)
+        
+        let hitTest = scnVw.hitTest(tapLoc)
+        if !hitTest.isEmpty{
+            let node = hitTest.filter({$0.node.name != "floorNode"}).first?.node
+            let pinchAction = SCNAction.scale(by: sender.scale, duration: 0)
+            node?.runAction(pinchAction)
+            sender.scale = 1.0
+        }
+    }
+    
+    @objc func rotated(sender: UIRotationGestureRecognizer){
+        let scnVw = sender.view as! ARSCNView
+        let tapLoc = sender.location(in: scnVw)
+        
+        let hitTest = scnVw.hitTest(tapLoc)
+        if !hitTest.isEmpty{
+            let node = hitTest.filter({$0.node.name != "floorNode"}).first?.node
+            if sender.state == .began || sender.state == .changed {
+                node?.eulerAngles = SCNVector3(CGFloat((node?.eulerAngles.x)!),sender.rotation,CGFloat((node?.eulerAngles.z)!))
+            }
+        }
+        
+    }
+    
     func addFurniture(hitTestResult:ARHitTestResult){
-        
-        
-        
+       
         guard let scene = SCNScene(named: "furnitures.scnassets/\(furnitureName).scn") else{return}
         
         let node = (scene.rootNode.childNode(withName: furnitureName, recursively: false))!
